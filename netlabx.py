@@ -18,7 +18,7 @@ class Application:
         self.mainarea = Frame(root, bg='#CCC', width=1024, height=720)
         self.dragarea = Canvas(self.mainarea, width=1000, height=500, bg='white')
         self.dragarea.pack(side='left', anchor='n')
-        self.dragarea.create_oval(175,175,100,100,fill='red',width=1)
+        #self.dragarea.create_oval(175,175,100,100,fill='red',width=1)
         self.mainarea.pack(expand=True, fill='both', side='right')
 
         #new menubar
