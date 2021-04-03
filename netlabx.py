@@ -8,7 +8,12 @@ import tkMessageBox
 reload(sys)
 sys.setdefaultencoding('utf-8')
 APP_NAME = "NetLabX"
-CODE_VERSION = "1.0.0"
+CODE_VERSION = "v1.0.0"
+
+class ScreenElement:
+    def __init__(self, element, id):
+        self.element = element
+        self.id = id
 
 class Application:
     def __init__(self, master):
@@ -18,8 +23,24 @@ class Application:
         self.mainarea = Frame(root, bg='#CCC', width=1024, height=720)
         self.dragarea = Canvas(self.mainarea, width=1000, height=500, bg='white')
         self.dragarea.pack(side='left', anchor='n')
-        #self.dragarea.create_oval(175,175,100,100,fill='red',width=1)
         self.mainarea.pack(expand=True, fill='both', side='right')
+
+        self.imgDesk = PhotoImage(file = "icons/desktop-back.png")
+        # put gif image on canvas
+        # pic's upper left corner (NW) on the canvas is at x=50 y=10
+        items = []
+        items.append(self.dragarea.create_image(0, 0, image=self.imgDesk, anchor='nw'))
+        self.dragarea.coords(items[0], 500, 150)
+
+        testeOne = self.dragarea.create_rectangle(0, 0, 100, 30, fill="grey40", outline="grey60")
+        testeTwo = self.dragarea.create_text(50, 15, text="click")
+        self.dragarea.tag_bind(testeOne, "<Button-1>", self.clicked)
+        self.dragarea.tag_bind(testeTwo, "<Button-1>", self.clicked)
+
+        self.dragarea.create_image(100, 100, image=self.imgDesk, anchor='nw')
+        self.dragarea.create_image(200, 200, image=self.imgDesk, anchor='nw')
+
+        #self.dragarea.create_oval(175,175,100,100,fill='red',width=1)
 
         #new menubar
         self.menubar = Menu(root)
@@ -45,83 +66,93 @@ class Application:
 
         # container equipments
         self.equipment = Frame(master)
-        #Item in frame
-        desktopIcon = PhotoImage(file = "icons/desktop-back.png")
-        self.desktop = Button(self.equipment)
-        self.desktop["font"] = ("Calibri", "8")
-        self.desktop["width"] = 65
-        self.desktop["height"] = 65
-        self.desktop["image"] = desktopIcon
-        self.desktop["text"] = "Desktop"
-        self.desktop["command"] = self.test
-        self.desktop.image = desktopIcon
-        self.desktop.pack()
 
-        laptopIcon = PhotoImage(file = "icons/laptop-back.png")
+        # Init Values
+        self.temp = {}
+        self.counter = 0
+        self.menuElements = {}
+        #Item in frame
+
+        self.temp["photo-image"] = PhotoImage(file = "icons/desktop-back.png")
+        newElement = ScreenElement(Button(self.equipment), self.getRandomId)
+        self.menuElements[newElement.id] = newElement
+        self.menuElements[newElement.id].element["font"] = ("Calibri", "8")
+        self.menuElements[newElement.id].element["width"] = 65
+        self.menuElements[newElement.id].element["height"] = 65
+        self.menuElements[newElement.id].element["image"] = self.temp["photo-image"]
+        self.menuElements[newElement.id].element["text"] = "Desktop"
+        self.menuElements[newElement.id].element["command"] = self.test(newElement.id)
+        self.menuElements[newElement.id].element.image = self.temp["photo-image"]
+        self.menuElements[newElement.id].element.pack()
+
+        self.temp["photo-image"] = PhotoImage(file = "icons/laptop-back.png")
         self.laptop = Button(self.equipment)
         self.laptop["font"] = ("Calibri", "8")
         self.laptop["width"] = 65
         self.laptop["height"] = 65
-        self.laptop["image"] = laptopIcon
+        self.laptop["image"] = self.temp["photo-image"]
         self.laptop["text"] = "Laptop"
         self.laptop["command"] = self.test
-        self.laptop.image = laptopIcon
+        self.laptop.image = self.temp["photo-image"]
         self.laptop.pack()
 
-        dnsIcon = PhotoImage(file = "icons/dns-back.png")
+        self.temp["photo-image"] = PhotoImage(file = "icons/dns-back.png")
         self.dns = Button(self.equipment)
         self.dns["font"] = ("Calibri", "8")
         self.dns["width"] = 65
         self.dns["height"] = 65
-        self.dns["image"] = dnsIcon
+        self.dns["image"] = self.temp["photo-image"]
         self.dns["text"] = "DNS Server"
         self.dns["command"] = self.test
-        self.dns.image = dnsIcon
+        self.dns.image = self.temp["photo-image"]
         self.dns.pack()
 
-        webIcon = PhotoImage(file = "icons/web-back.png")
+        self.temp["photo-image"] = PhotoImage(file = "icons/web-back.png")
         self.web = Button(self.equipment)
         self.web["font"] = ("Calibri", "8")
         self.web["width"] = 65
         self.web["height"] = 65
-        self.web["image"] = webIcon
+        self.web["image"] = self.temp["photo-image"]
         self.web["text"] = "Web Server"
         self.web["command"] = self.test
-        self.web.image = webIcon
+        self.web.image = self.temp["photo-image"]
         self.web.pack()
 
-        routerIcon = PhotoImage(file = "icons/router-back.png")
+        self.temp["photo-image"] = PhotoImage(file = "icons/router-back.png")
         self.router = Button(self.equipment)
         self.router["font"] = ("Calibri", "8")
         self.router["width"] = 65
         self.router["height"] = 65
-        self.router["image"] = routerIcon
+        self.router["image"] = self.temp["photo-image"]
         self.router["text"] = "Router"
         self.router["command"] = self.test
-        self.router.image = routerIcon
+        self.router.image = self.temp["photo-image"]
         self.router.pack()
 
-        switchIcon = PhotoImage(file = "icons/switch-back.png")
+        self.temp["photo-image"] = PhotoImage(file = "icons/switch-back.png")
         self.switch = Button(self.equipment)
         self.switch["font"] = ("Calibri", "8")
         self.switch["width"] = 65
         self.switch["height"] = 65
-        self.switch["image"] = switchIcon
+        self.switch["image"] = self.temp["photo-image"]
         self.switch["text"] = "Switch"
         self.switch["command"] = self.test
-        self.switch.image = switchIcon
+        self.switch.image = self.temp["photo-image"]
         self.switch.pack()
 
-        wiresharkIcon = PhotoImage(file = "icons/wireshark-back.png")
+        self.temp["photo-image"] = PhotoImage(file = "icons/wireshark-back.png")
         self.wireshark = Button(self.equipment)
         self.wireshark["font"] = ("Calibri", "8")
         self.wireshark["width"] = 65
         self.wireshark["height"] = 65
-        self.wireshark["image"] = wiresharkIcon
+        self.wireshark["image"] = self.temp["photo-image"]
         self.wireshark["text"] = "Wireshark"
         self.wireshark["command"] = self.test
-        self.wireshark.image = wiresharkIcon
+        self.wireshark.image = self.temp["photo-image"]
         self.wireshark.pack()
+
+        #remove temp
+        del self.temp["photo-image"]
         #end item
         self.equipment.pack()
 
@@ -147,15 +178,22 @@ class Application:
         print "Quit"
 
     def about(self):
-        tkMessageBox.showinfo("About", APP_NAME + " v." + CODE_VERSION + "\n\nPatrick Ferro Ribeiro")
+        tkMessageBox.showinfo("About", APP_NAME + " " + CODE_VERSION + "\n\nPatrick Ferro Ribeiro")
 
-    def test(self):
+    def test(self, teste):
+        print self.menuElements[teste].element["text"]
         print "test button"
 
+    def clicked(self, test):
+        print "pressed"
+
+    def getRandomId(self):
+        id = self.counter
+        self.counter = self.counter + 1
+        return str(id)
 
 root = Tk(className=APP_NAME)
-root.title(APP_NAME + " - " +CODE_VERSION)
-imgicon = PhotoImage(file='icons/main-icon.gif')
-root.tk.call('wm', 'iconphoto', root._w, imgicon)
+root.title(APP_NAME + " - " + CODE_VERSION)
+root.tk.call('wm', 'iconphoto', root._w, PhotoImage(file='icons/main-icon.gif'))
 Application(root)
 root.mainloop()
