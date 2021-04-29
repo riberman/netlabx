@@ -28,9 +28,12 @@ class ScreenElement:
         self.element["height"] = SCREEN_ICON_SIZE
         self.element["image"] = self.photoImage
         self.element["text"] = data['name']
+        #self.element["command"] = lambda: self.test(data)
         self.element.image = self.photoImage
         self.element.pack()
         CreateToolTip(self.element, text = 'Criar novo ' + self.element["text"])
+    def __repr__(self):
+        return "ScreenElement id:% s elementText:% s" % (self.id, self.element["text"])
 
 #CreateToolTip
 class CreateToolTip(object):
@@ -121,10 +124,8 @@ class Application:
 
         #Item in frame
         for screenElement in data['screen-elements']:
-            print screenElement['id']
             self.menuElements[screenElement['id']] = ScreenElement(Button(self.equipment), screenElement)
-            print self.menuElements[screenElement['id']].id
-            self.menuElements[screenElement['id']].element["command"] = lambda: self.test(self.menuElements[screenElement['id']])
+            self.menuElements[screenElement['id']].element["command"] = lambda index=screenElement['id']: self.test(self.menuElements[index])
         #end item
         self.equipment.pack()
 
