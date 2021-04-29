@@ -1,19 +1,66 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# https://www.devmedia.com.br/tkinter-interfaces-graficas-em-python/33956
 from Tkinter import *
 from PIL import Image, ImageTk
 import sys
 import tkMessageBox
+import Tkinter as tk
+import json
 reload(sys)
 sys.setdefaultencoding('utf-8')
+
+#Default Values
 APP_NAME = "NetLabX"
 CODE_VERSION = "v1.0.0"
+SCREEN_ICON_SIZE = 65
 
+#Load config json
+with open('config.conf') as json_file:
+    data = json.load(json_file)
+
+#Menu Button Object
 class ScreenElement:
-    def __init__(self, element, id):
+    def __init__(self, element, data):
         self.element = element
-        self.id = id
+        self.id = data['id']
+        self.photoImage = PhotoImage(file = data['logo'])
+        self.element["width"] = SCREEN_ICON_SIZE
+        self.element["height"] = SCREEN_ICON_SIZE
+        self.element["image"] = self.photoImage
+        self.element["text"] = data['name']
+        self.element.image = self.photoImage
+        self.element.pack()
+        CreateToolTip(self.element, text = 'Criar novo ' + self.element["text"])
+
+#CreateToolTip
+class CreateToolTip(object):
+    '''
+    create a tooltip for a given widget
+    '''
+    def __init__(self, widget, text='widget info'):
+        self.widget = widget
+        self.text = text
+        self.widget.bind("<Enter>", self.enter)
+        self.widget.bind("<Leave>", self.close)
+
+    def enter(self, event=None):
+        x = y = 0
+        x, y, cx, cy = self.widget.bbox("insert")
+        x += self.widget.winfo_rootx() + SCREEN_ICON_SIZE
+        y += self.widget.winfo_rooty() + SCREEN_ICON_SIZE
+        # creates a toplevel window
+        self.tw = tk.Toplevel(self.widget)
+        # Leaves only the label and removes the app window
+        self.tw.wm_overrideredirect(True)
+        self.tw.wm_geometry("+%d+%d" % (x, y))
+        label = tk.Label(self.tw, text=self.text, justify='left',
+                       background='yellow', relief='solid', borderwidth=1,
+                       font=("times", "8", "normal"))
+        label.pack(ipadx=1)
+
+    def close(self, event=None):
+        if self.tw:
+            self.tw.destroy()
 
 class Application:
     def __init__(self, master):
@@ -71,88 +118,13 @@ class Application:
         self.temp = {}
         self.counter = 0
         self.menuElements = {}
+
         #Item in frame
-
-        self.temp["photo-image"] = PhotoImage(file = "icons/desktop-back.png")
-        newElement = ScreenElement(Button(self.equipment), self.getRandomId)
-        self.menuElements[newElement.id] = newElement
-        self.menuElements[newElement.id].element["font"] = ("Calibri", "8")
-        self.menuElements[newElement.id].element["width"] = 65
-        self.menuElements[newElement.id].element["height"] = 65
-        self.menuElements[newElement.id].element["image"] = self.temp["photo-image"]
-        self.menuElements[newElement.id].element["text"] = "Desktop"
-        self.menuElements[newElement.id].element["command"] = self.test(newElement.id)
-        self.menuElements[newElement.id].element.image = self.temp["photo-image"]
-        self.menuElements[newElement.id].element.pack()
-
-        self.temp["photo-image"] = PhotoImage(file = "icons/laptop-back.png")
-        self.laptop = Button(self.equipment)
-        self.laptop["font"] = ("Calibri", "8")
-        self.laptop["width"] = 65
-        self.laptop["height"] = 65
-        self.laptop["image"] = self.temp["photo-image"]
-        self.laptop["text"] = "Laptop"
-        self.laptop["command"] = self.test
-        self.laptop.image = self.temp["photo-image"]
-        self.laptop.pack()
-
-        self.temp["photo-image"] = PhotoImage(file = "icons/dns-back.png")
-        self.dns = Button(self.equipment)
-        self.dns["font"] = ("Calibri", "8")
-        self.dns["width"] = 65
-        self.dns["height"] = 65
-        self.dns["image"] = self.temp["photo-image"]
-        self.dns["text"] = "DNS Server"
-        self.dns["command"] = self.test
-        self.dns.image = self.temp["photo-image"]
-        self.dns.pack()
-
-        self.temp["photo-image"] = PhotoImage(file = "icons/web-back.png")
-        self.web = Button(self.equipment)
-        self.web["font"] = ("Calibri", "8")
-        self.web["width"] = 65
-        self.web["height"] = 65
-        self.web["image"] = self.temp["photo-image"]
-        self.web["text"] = "Web Server"
-        self.web["command"] = self.test
-        self.web.image = self.temp["photo-image"]
-        self.web.pack()
-
-        self.temp["photo-image"] = PhotoImage(file = "icons/router-back.png")
-        self.router = Button(self.equipment)
-        self.router["font"] = ("Calibri", "8")
-        self.router["width"] = 65
-        self.router["height"] = 65
-        self.router["image"] = self.temp["photo-image"]
-        self.router["text"] = "Router"
-        self.router["command"] = self.test
-        self.router.image = self.temp["photo-image"]
-        self.router.pack()
-
-        self.temp["photo-image"] = PhotoImage(file = "icons/switch-back.png")
-        self.switch = Button(self.equipment)
-        self.switch["font"] = ("Calibri", "8")
-        self.switch["width"] = 65
-        self.switch["height"] = 65
-        self.switch["image"] = self.temp["photo-image"]
-        self.switch["text"] = "Switch"
-        self.switch["command"] = self.test
-        self.switch.image = self.temp["photo-image"]
-        self.switch.pack()
-
-        self.temp["photo-image"] = PhotoImage(file = "icons/wireshark-back.png")
-        self.wireshark = Button(self.equipment)
-        self.wireshark["font"] = ("Calibri", "8")
-        self.wireshark["width"] = 65
-        self.wireshark["height"] = 65
-        self.wireshark["image"] = self.temp["photo-image"]
-        self.wireshark["text"] = "Wireshark"
-        self.wireshark["command"] = self.test
-        self.wireshark.image = self.temp["photo-image"]
-        self.wireshark.pack()
-
-        #remove temp
-        del self.temp["photo-image"]
+        for screenElement in data['screen-elements']:
+            print screenElement['id']
+            self.menuElements[screenElement['id']] = ScreenElement(Button(self.equipment), screenElement)
+            print self.menuElements[screenElement['id']].id
+            self.menuElements[screenElement['id']].element["command"] = lambda: self.test(self.menuElements[screenElement['id']])
         #end item
         self.equipment.pack()
 
@@ -180,9 +152,9 @@ class Application:
     def about(self):
         tkMessageBox.showinfo("About", APP_NAME + " " + CODE_VERSION + "\n\nPatrick Ferro Ribeiro")
 
-    def test(self, teste):
-        print self.menuElements[teste].element["text"]
-        print "test button"
+    def test(self, element):
+        print element.id
+        print element.element["text"]
 
     def clicked(self, test):
         print "pressed"
