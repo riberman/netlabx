@@ -87,8 +87,8 @@ class Application:
         self.dragarea.tag_bind(testeOne, "<Button-1>", self.clicked)
         self.dragarea.tag_bind(testeTwo, "<Button-1>", self.clicked)
 
-        self.dragarea.create_image(100, 100, image=self.imgDesk, anchor='nw')
-        self.dragarea.create_image(200, 200, image=self.imgDesk, anchor='nw')
+        # self.dragarea.create_image(100, 100, image=self.imgDesk, anchor='nw')
+        # self.dragarea.create_image(200, 200, image=self.imgDesk, anchor='nw')
 
         #self.dragarea.create_oval(175,175,100,100,fill='red',width=1)
 
@@ -156,6 +156,18 @@ class Application:
     def test(self, element):
         print element.id
         print element.element["text"]
+        button = Button(text="C")
+        button.bind("<Button-1>", self.clicked)
+        testeImg = PhotoImage(file = "icons/config-back.png")
+        button2 = Button(width=SCREEN_ICON_SIZE, height=SCREEN_ICON_SIZE, text="P", command=self.clicked, image=testeImg)
+        # button2.bind("<Button-1>", self.clicked)
+        # button2["image"] = PhotoImage(file = "icons/config-back.png")
+        self.dragarea.create_window(155, 65,window=button)
+        self.dragarea.create_window(155, 105,window=button2)
+        self.dragarea.create_image(50, 50, image=element.photoImage, anchor='nw')
+
+    def clicked(self):
+        print "pressed"
 
     def clicked(self, test):
         print "pressed"
