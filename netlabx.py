@@ -57,8 +57,8 @@ class CreateToolTip(object):
         self.tw.wm_overrideredirect(True)
         self.tw.wm_geometry("+%d+%d" % (x, y))
         label = tk.Label(self.tw, text=self.text, justify='left',
-                       background='yellow', relief='solid', borderwidth=1,
-                       font=("times", "8", "normal"))
+                       background='#3498db', relief='solid', borderwidth=1,
+                       font=("times", "9", "normal"))
         label.pack(ipadx=1)
 
     def close(self, event=None):
@@ -75,17 +75,17 @@ class Application:
         self.dragarea.pack(side='left', anchor='n')
         self.mainarea.pack(expand=True, fill='both', side='right')
 
-        self.imgDesk = PhotoImage(file = "icons/desktop-back.png")
+        # self.imgDesk = PhotoImage(file = "icons/desktop-back.png")
         # put gif image on canvas
         # pic's upper left corner (NW) on the canvas is at x=50 y=10
-        items = []
-        items.append(self.dragarea.create_image(0, 0, image=self.imgDesk, anchor='nw'))
-        self.dragarea.coords(items[0], 500, 150)
+        # items = []
+        # items.append(self.dragarea.create_image(0, 0, image=self.imgDesk, anchor='nw'))
+        # self.dragarea.coords(items[0], 500, 150)
 
-        testeOne = self.dragarea.create_rectangle(0, 0, 100, 30, fill="grey40", outline="grey60")
-        testeTwo = self.dragarea.create_text(50, 15, text="click")
-        self.dragarea.tag_bind(testeOne, "<Button-1>", self.clicked)
-        self.dragarea.tag_bind(testeTwo, "<Button-1>", self.clicked)
+        # testeOne = self.dragarea.create_rectangle(0, 0, 100, 30, fill="grey40", outline="grey60")
+        # testeTwo = self.dragarea.create_text(50, 15, text="click")
+        # self.dragarea.tag_bind(testeOne, "<Button-1>", self.clicked)
+        # self.dragarea.tag_bind(testeTwo, "<Button-1>", self.clicked)
 
         # self.dragarea.create_image(100, 100, image=self.imgDesk, anchor='nw')
         # self.dragarea.create_image(200, 200, image=self.imgDesk, anchor='nw')
@@ -156,15 +156,25 @@ class Application:
     def test(self, element):
         print element.id
         print element.element["text"]
-        button = Button(text="C")
-        button.bind("<Button-1>", self.clicked)
-        testeImg = PhotoImage(file = "icons/config-back.png")
-        button2 = Button(width=SCREEN_ICON_SIZE, height=SCREEN_ICON_SIZE, text="P", command=self.clicked, image=testeImg)
-        # button2.bind("<Button-1>", self.clicked)
-        # button2["image"] = PhotoImage(file = "icons/config-back.png")
-        self.dragarea.create_window(155, 65,window=button)
-        self.dragarea.create_window(155, 105,window=button2)
-        self.dragarea.create_image(50, 50, image=element.photoImage, anchor='nw')
+        # button = Button(text="C")
+        # button.bind("<Button-1>", self.clicked)
+        self.testeImg = Image.open("icons/config-back.png")
+        self.testeImgResized = self.testeImg.resize((25, 25), Image.ANTIALIAS)
+        self.newTesteImg = ImageTk.PhotoImage(self.testeImgResized)
+        # self.testeImg = PhotoImage(width=100, height=100, file = "icons/config-back.png")
+        # self.testeImg.subsample(200, 200)
+        # button2 = Button(width=SCREEN_ICON_SIZE, height=SCREEN_ICON_SIZE, text="P", command=self.clicked, image=testeImg)
+        # # button2.bind("<Button-1>", self.clicked)
+        # # button2["image"] = PhotoImage(file = "icons/config-back.png")
+        # self.dragarea.create_window(155, 65,window=button)
+        # self.dragarea.create_window(155, 105,window=button2)
+        position_x = 50
+        position_y = 25
+        self.dragarea.create_image(position_x, position_y, image=element.photoImage, anchor='nw')
+        self.dragarea.create_image(position_x + 70, position_y, image=self.newTesteImg, anchor='nw')
+        self.dragarea.create_image(position_x + 70, position_y + 25, image=self.newTesteImg, anchor='nw')
+        self.dragarea.create_image(position_x + 70, position_y + 50, image=self.newTesteImg, anchor='nw')
+        self.dragarea.create_image(position_x - 25, position_y, image=self.newTesteImg, anchor='nw')
 
     def clicked(self):
         print "pressed"
