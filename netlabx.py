@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from Tkinter import *
+from tkinter import *
 from PIL import Image, ImageTk
-import sys
-import tkMessageBox
-import Tkinter as tk
+# import tkMessageBox
+import tkinter as tk
 import json
-reload(sys)
-sys.setdefaultencoding('utf-8')
+import imp
+imp.reload(sys)
 
 #Default Values
 APP_NAME = "NetLabX"
@@ -142,20 +141,20 @@ class Application:
             self.mensagem["text"] = "Erro na autenticação"
 
     def open(self):
-        print "Open"
+        print("Open")
 
     def save(self):
-        print "Save"
+        print("Save")
 
     def quit(self):
-        print "Quit"
+        print("Quit")
 
     def about(self):
-        tkMessageBox.showinfo("About", APP_NAME + " " + CODE_VERSION + "\n\nPatrick Ferro Ribeiro")
+        tk.messagebox.showinfo("About", APP_NAME + " " + CODE_VERSION + "\n\nPatrick Ferro Ribeiro")
 
     def test(self, element):
-        print element.id
-        print element.element["text"]
+        print(element.id)
+        print(element.element["text"])
         # button = Button(text="C")
         # button.bind("<Button-1>", self.clicked)
         self.testeImg = Image.open("icons/config-back.png")
@@ -177,10 +176,10 @@ class Application:
         self.dragarea.create_image(position_x - 25, position_y, image=self.newTesteImg, anchor='nw')
 
     def clicked(self):
-        print "pressed"
+        print("pressed")
 
     def clicked(self, test):
-        print "pressed"
+        print("pressed")
 
     def getRandomId(self):
         id = self.counter
