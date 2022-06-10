@@ -304,7 +304,9 @@ class Application:
 
     def dragDevice(self, event, tag):
         self.dragarea.moveto(tag, event.x, event.y)
+        self.update_line_by_tag(tag, event.x, event.y)
         self.click_num=0
+        print("\n")
 
     def generateConection(self):
         self.dragarea.create_line(50, 50, 200, 200, fill='black', width=5)
@@ -321,14 +323,33 @@ class Application:
             self.connection_2 = tag
             tag_line = "{}/{}".format(self.connection_1, self.connection_2)
             print("Criada linha: {}".format(tag_line))
-            self.connections_list[tag_line] = self.dragarea.create_line(self.x1 - 10, self.y1, x2 - 10, y2, fill='black', width=5, tag=tag_line)
+            self.connections_list[tag_line] = self.dragarea.create_line(self.x1 - 15, self.y1, x2 - 15, y2, fill='black', width=5, tag=tag_line)
             self.dragarea.tag_lower(self.connections_list[tag_line])
             self.click_num=0
 
     def remove_line_by_tag(self, tag):
+        list_to_remove = []
         for ref in self.connections_list:
             if tag in ref:
-                self.dragarea.delete(ref)
+                print(self.connections_list[ref])
+                list_to_remove.append(self.connections_list[ref])
+
+        for element in list_to_remove:
+            self.dragarea.delete(element)
+            self.connections_list.pop(element, None)
+
+    def update_line_by_tag(self, tag, x, y):
+        for ref in self.connections_list:
+            if tag in ref:
+                line_tags = ref.split("/")
+                x1, y1, x2, y2 = self.dragarea.coords(self.connections_list[ref])
+                # print("REF: {} TAG: {} X: {} Y: {}".format(ref, tag, x, y))
+                # print("x1: {} y1: {} x2: {} y2: {}".format(x1, y1, x2, y2))
+                if tag == line_tags[0]:
+                    self.dragarea.coords(self.connections_list[ref], x + 35, y + 35, x2, y2)
+                else:
+                    self.dragarea.coords(self.connections_list[ref], x1, y1, x + 35, y + 35)
+
 
 
     def handle_keypress(event):
