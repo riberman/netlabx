@@ -25,6 +25,7 @@ class ScreenElement:
     def __init__(self, element, data):
         self.element = element
         self.id = data['id']
+        self.name = data['name']
         self.photoImage = PhotoImage(file = data['logo'])
         self.element["width"] = SCREEN_ICON_SIZE
         self.element["height"] = SCREEN_ICON_SIZE
@@ -173,7 +174,7 @@ class Application:
 
         # Init Values
         self.temp = {}
-        self.counter = 0
+        self.counter = 1
         self.menuElements = {}
 
         #Item in frame
@@ -208,7 +209,8 @@ class Application:
         tkMessageBox.showinfo("About", APP_NAME + " " + CODE_VERSION + "\n\nPatrick Ferro Ribeiro")
 
     def createDevice(self, element):
-        tagGenerated = "{}-tag".format(self.getRandomId())
+        id = self.getRandomId()
+        tagGenerated = "{}-tag".format(id)
         # print(element.id)
         # print(element.element["text"])
         # button = Button(text="C")
@@ -252,6 +254,8 @@ class Application:
 
         buttonClose = Button(width=20, height=20, command= lambda arg=tagGenerated : self.buttonClose(arg), image=self.ptImgClose)
         CreateToolTipOptions(buttonClose, text = 'Fechar')
+
+        labelEquip = Label(self.dragarea, text=element.name + " " + id, fg='black', bg='white')
         # buttonClose.bind("<B1-Motion>", lambda event, arg=tagGenerated : self.dragDevice(event, arg))
         # Create Line Test
         # self.generateConection()
@@ -274,6 +278,7 @@ class Application:
         self.dragarea.create_window(position_x + 85, position_y + 70, window=button4, tag=tagGenerated)
         # self.dragarea.create_window(position_x - 10, position_y + 40, window=buttonClose, tag=tagGenerated)
         self.dragarea.create_window(position_x + 85, position_y + 10, window=buttonClose, tag=tagGenerated)
+        self.dragarea.create_window(position_x + 35, position_y + 95, window=labelEquip, tag=tagGenerated)
 
         # self.dragarea.create_image(position_x + 70, position_y, image=self.newTesteImg, anchor='nw')
         # self.dragarea.create_image(position_x + 70, position_y + 25, image=self.newTesteImg, anchor='nw')
@@ -299,20 +304,21 @@ class Application:
         for element in self.dragarea.find_withtag("{}teste".format(tag)):
             print("Element: {}".format(element))
         self.dragarea.delete(tag)
+        self.dragarea.delete(tag + "btn_close")
         self.remove_line_by_tag(tag)
 
 
     def dragDevice(self, event, tag):
+        self.click_num=0
         self.dragarea.moveto(tag, event.x, event.y)
         self.update_line_by_tag(tag, event.x, event.y)
-        self.click_num=0
         print("\n")
 
     def generateConection(self):
         self.dragarea.create_line(50, 50, 200, 200, fill='black', width=5)
 
     def draw_line(self, event, tag):
-        if self.click_num==0:
+        if self.click_num==0 or self.connection_1==tag:
             self.x1=event.x_root - 55
             self.y1=event.y_root - 55
             self.connection_1 = tag
@@ -323,7 +329,15 @@ class Application:
             self.connection_2 = tag
             tag_line = "{}/{}".format(self.connection_1, self.connection_2)
             print("Criada linha: {}".format(tag_line))
+            print(self.x1, x2, self.y1, y2)
+            print((self.x1 + x2)/2, (self.y1 + y2)/2)
             self.connections_list[tag_line] = self.dragarea.create_line(self.x1 - 15, self.y1, x2 - 15, y2, fill='black', width=5, tag=tag_line)
+
+            buttonClose = Button(width=20, height=20, command= lambda arg=tag_line : self.buttonClose(arg), image=self.ptImgClose)
+            CreateToolTipOptions(buttonClose, text = 'Fechar')
+            self.dragarea.create_window((self.x1 + x2)/2, (self.y1 + y2)/2, window=buttonClose, tag=tag_line + "btn_close")
+
+
             self.dragarea.tag_lower(self.connections_list[tag_line])
             self.click_num=0
 
@@ -333,6 +347,7 @@ class Application:
             if tag in ref:
                 print(self.connections_list[ref])
                 list_to_remove.append(self.connections_list[ref])
+                self.dragarea.delete(ref + "btn_close")
 
         for element in list_to_remove:
             self.dragarea.delete(element)
@@ -345,10 +360,13 @@ class Application:
                 x1, y1, x2, y2 = self.dragarea.coords(self.connections_list[ref])
                 # print("REF: {} TAG: {} X: {} Y: {}".format(ref, tag, x, y))
                 # print("x1: {} y1: {} x2: {} y2: {}".format(x1, y1, x2, y2))
+                print("REF: {} TAG: {}".format(ref, tag))
                 if tag == line_tags[0]:
                     self.dragarea.coords(self.connections_list[ref], x + 35, y + 35, x2, y2)
+                    self.dragarea.moveto(ref + "btn_close", (x + x2)/2, (y + y2)/2)
                 else:
                     self.dragarea.coords(self.connections_list[ref], x1, y1, x + 35, y + 35)
+                    self.dragarea.moveto(ref + "btn_close", (x + x1)/2, (y + y1)/2)
 
 
 
