@@ -7,6 +7,7 @@ from tkinter import messagebox as tkMessageBox
 # import Tkinter as tk
 import tkinter as tk
 import json
+import os
 # import importlib
 # importlib.reload(sys)
 # sys.setdefaultencoding('utf-8')
@@ -34,57 +35,26 @@ class ScreenElement:
         #self.element["command"] = lambda: self.test(data)
         self.element.image = self.photoImage
         self.element.pack()
-        CreateToolTip(self.element, text = 'Criar novo ' + self.element["text"])
+        ToolTip(self.element, x_pading=SCREEN_ICON_SIZE, y_pading=SCREEN_ICON_SIZE, text="Criar novo {}".format(self.element["text"]))
 
     def __repr__(self):
         return "ScreenElement id:% s elementText:% s" % (self.id, self.element["text"])
 
 #CreateToolTip
-class CreateToolTip(object):
-    '''
-    create a tooltip for a given widget
-    '''
-    def __init__(self, widget, text='widget info'):
+class ToolTip(object):
+    def __init__(self, widget, x_pading=25, y_pading=25, text='dica de ferramenta'):
         self.widget = widget
         self.text = text
+        self.x_pading = x_pading
+        self.y_pading = y_pading
         self.widget.bind("<Enter>", self.enter)
         self.widget.bind("<Leave>", self.close)
 
     def enter(self, event=None):
         x = y = 0
         x, y, cx, cy = self.widget.bbox("insert")
-        x += self.widget.winfo_rootx() + SCREEN_ICON_SIZE
-        y += self.widget.winfo_rooty() + SCREEN_ICON_SIZE
-        # creates a toplevel window
-        self.tw = tk.Toplevel(self.widget)
-        # Leaves only the label and removes the app window
-        self.tw.wm_overrideredirect(True)
-        self.tw.wm_geometry("+%d+%d" % (x, y))
-        label = tk.Label(self.tw, text=self.text, justify='left',
-                       background='#3498db', relief='solid', borderwidth=1,
-                       font=("times", "9", "normal"))
-        label.pack(ipadx=1)
-
-    def close(self, event=None):
-        if self.tw:
-            self.tw.destroy()
-
-#CreateToolTipOption
-class CreateToolTipOptions(object):
-    '''
-    create a tooltip for a given widget
-    '''
-    def __init__(self, widget, text='widget info'):
-        self.widget = widget
-        self.text = text
-        self.widget.bind("<Enter>", self.enter)
-        self.widget.bind("<Leave>", self.close)
-
-    def enter(self, event=None):
-        x = y = 0
-        x, y, cx, cy = self.widget.bbox("insert")
-        x += self.widget.winfo_rootx() + 25
-        y += self.widget.winfo_rooty() + 25
+        x += self.widget.winfo_rootx() + self.x_pading
+        y += self.widget.winfo_rooty() + self.y_pading
         # creates a toplevel window
         self.tw = tk.Toplevel(self.widget)
         # Leaves only the label and removes the app window
@@ -152,16 +122,16 @@ class Application:
 
         # create a pulldown menu, and add it to the menu bar
         self.filemenu = Menu(self.menubar, tearoff=0)
-        self.filemenu.add_command(label="Open", command=self.open)
-        self.filemenu.add_command(label="Save", command=self.save)
+        self.filemenu.add_command(label="Abrir", command=self.open)
+        self.filemenu.add_command(label="Salvar", command=self.save)
         self.filemenu.add_separator()
-        self.filemenu.add_command(label="Exit", command=root.quit)
-        self.menubar.add_cascade(label="File", menu=self.filemenu)
+        self.filemenu.add_command(label="Sair", command=root.quit)
+        self.menubar.add_cascade(label="Arquivo", menu=self.filemenu)
 
         # create a pulldown menu
         self.helpmenu = Menu(self.menubar, tearoff=0)
-        self.helpmenu.add_command(label="About", command=self.about)
-        self.menubar.add_cascade(label="Help", menu=self.helpmenu)
+        self.helpmenu.add_command(label="Sobre", command=self.about)
+        self.menubar.add_cascade(label="Ajuda", menu=self.helpmenu)
 
         # display the menu
         root.config(menu=self.menubar)
@@ -206,7 +176,7 @@ class Application:
         prin("Quit")
 
     def about(self):
-        tkMessageBox.showinfo("About", APP_NAME + " " + CODE_VERSION + "\n\nPatrick Ferro Ribeiro")
+        tkMessageBox.showinfo("Sobre", "{} {}\n\nPatrick Ferro Ribeiro".format(APP_NAME, CODE_VERSION))
 
     def createDevice(self, element):
         id = self.getRandomId()
@@ -237,25 +207,27 @@ class Application:
         # label1.bind('<Button-1>', lambda event, arg=tagGenerated : self.draw_line(event, arg))
 
         button1 = Button(width=20, height=20, command= lambda arg=element.id : self.button1(arg), image=self.ptImgShell)
-        CreateToolTipOptions(button1, text = 'Console')
+        ToolTip(button1, text = 'Console')
         # button1.bind("<B1-Motion>", lambda event, arg=tagGenerated : self.dragDevice(event, arg))
 
         button2 = Button(width=20, height=20, command= lambda arg=element.id : self.button2(arg), image=self.ptImgConfig)
-        CreateToolTipOptions(button2, text = 'Configurações')
+        ToolTip(button2, text = 'Configurações')
         # button2.bind("<B1-Motion>", lambda event, arg=tagGenerated : self.dragDevice(event, arg))
 
         button3 = Button(width=20, height=20, command= lambda arg=element.id : self.button3(arg), image=self.ptImgOn)
-        CreateToolTipOptions(button3, text = 'Ligar')
+        ToolTip(button3, text = 'Ligar')
         # button3.bind("<B1-Motion>", lambda event, arg=tagGenerated : self.dragDevice(event, arg))
 
         button4 = Button(width=20, height=20, command= lambda arg=element.id : self.button4(arg), image=self.ptImgOff)
-        CreateToolTipOptions(button4, text = 'Desligar')
+        ToolTip(button4, text = 'Desligar')
         # button4.bind("<B1-Motion>", lambda event, arg=tagGenerated : self.dragDevice(event, arg))
 
         buttonClose = Button(width=20, height=20, command= lambda arg=tagGenerated : self.buttonClose(arg), image=self.ptImgClose)
-        CreateToolTipOptions(buttonClose, text = 'Fechar')
+        ToolTip(buttonClose, text = 'Fechar')
 
         labelEquip = Label(self.dragarea, text=element.name + " " + id, fg='black', bg='white')
+        ToolTip(labelEquip, text = 'Editar Nome')
+        labelEquip.bind("<Button-1>", lambda event, labelEquip=labelEquip, element=element: self.modal_name_device(event, labelEquip, element))
         # buttonClose.bind("<B1-Motion>", lambda event, arg=tagGenerated : self.dragDevice(event, arg))
         # Create Line Test
         # self.generateConection()
@@ -292,7 +264,12 @@ class Application:
         print("BTN1 ID: {}".format(test))
 
     def button2(self, test):
-        print("BTN2 ID: {}".format(test))
+        container="mysql"
+        print("docker inspect --format \'{{ .NetworkSettings.Networks.dev.IPAddress }}\'")
+        stream = os.popen("docker inspect --format \'{{ .NetworkSettings.Networks.dev.IPAddress }}\' {}".format(container))
+        output = stream.readlines()
+        print(output)
+        # print("BTN2 ID: {}".format(test))
 
     def button3(self, test):
         print("BTN3 ID: {}".format(test))
@@ -312,20 +289,23 @@ class Application:
         self.click_num=0
         self.dragarea.moveto(tag, event.x, event.y)
         self.update_line_by_tag(tag, event.x, event.y)
-        print("\n")
 
     def generateConection(self):
         self.dragarea.create_line(50, 50, 200, 200, fill='black', width=5)
 
     def draw_line(self, event, tag):
+        # print(event.widget)
+        x_widget, y_widget = self.dragarea.coords(tag)
+        x_widget = x_widget + 10
+        y_widget = y_widget + 10
         if self.click_num==0 or self.connection_1==tag:
-            self.x1=event.x_root - 55
-            self.y1=event.y_root - 55
+            self.x1=x_widget
+            self.y1=y_widget
             self.connection_1 = tag
             self.click_num=1
         else:
-            x2=event.x_root - 55
-            y2=event.y_root - 55
+            x2=x_widget
+            y2=y_widget
             self.connection_2 = tag
             tag_line = "{}/{}".format(self.connection_1, self.connection_2)
             print("Criada linha: {}".format(tag_line))
@@ -334,7 +314,7 @@ class Application:
             self.connections_list[tag_line] = self.dragarea.create_line(self.x1 - 15, self.y1, x2 - 15, y2, fill='black', width=5, tag=tag_line)
 
             buttonClose = Button(width=20, height=20, command= lambda arg=tag_line : self.buttonClose(arg), image=self.ptImgClose)
-            CreateToolTipOptions(buttonClose, text = 'Fechar')
+            ToolTip(buttonClose, text = 'Fechar')
             self.dragarea.create_window((self.x1 + x2)/2, (self.y1 + y2)/2, window=buttonClose, tag=tag_line + "btn_close")
 
 
@@ -345,29 +325,72 @@ class Application:
         list_to_remove = []
         for ref in self.connections_list:
             if tag in ref:
-                print(self.connections_list[ref])
-                list_to_remove.append(self.connections_list[ref])
+                print("REMOVEU: {}".format(ref))
+                self.dragarea.delete(self.connections_list[ref])
                 self.dragarea.delete(ref + "btn_close")
+                list_to_remove.append(ref)
 
-        for element in list_to_remove:
-            self.dragarea.delete(element)
-            self.connections_list.pop(element, None)
+        for key in list_to_remove:
+            self.connections_list.pop(key, None)
 
     def update_line_by_tag(self, tag, x, y):
+        # list_to_remove = []
         for ref in self.connections_list:
             if tag in ref:
-                line_tags = ref.split("/")
-                x1, y1, x2, y2 = self.dragarea.coords(self.connections_list[ref])
-                # print("REF: {} TAG: {} X: {} Y: {}".format(ref, tag, x, y))
-                # print("x1: {} y1: {} x2: {} y2: {}".format(x1, y1, x2, y2))
-                print("REF: {} TAG: {}".format(ref, tag))
-                if tag == line_tags[0]:
-                    self.dragarea.coords(self.connections_list[ref], x + 35, y + 35, x2, y2)
-                    self.dragarea.moveto(ref + "btn_close", (x + x2)/2, (y + y2)/2)
-                else:
-                    self.dragarea.coords(self.connections_list[ref], x1, y1, x + 35, y + 35)
-                    self.dragarea.moveto(ref + "btn_close", (x + x1)/2, (y + y1)/2)
+                try:
+                  line_tags = ref.split("/")
+                  x1, y1, x2, y2 = self.dragarea.coords(self.connections_list[ref])
+                  # print("REF: {} TAG: {} X: {} Y: {}".format(ref, tag, x, y))
+                  # print("x1: {} y1: {} x2: {} y2: {}".format(x1, y1, x2, y2))
+                  print("REF: {} TAG: {}".format(ref, tag))
+                  if tag == line_tags[0]:
+                      self.dragarea.coords(self.connections_list[ref], x + 35, y + 35, x2, y2)
+                      self.dragarea.moveto(ref + "btn_close", (x + x2)/2, (y + y2)/2)
+                  else:
+                      self.dragarea.coords(self.connections_list[ref], x1, y1, x + 35, y + 35)
+                      self.dragarea.moveto(ref + "btn_close", (x + x1)/2, (y + y1)/2)
+                except:
+                  print("An exception occurred")
+                  print("****REF: {} TAG: {}".format(ref, tag))
+                  # list_to_remove.append(ref)
 
+        # for key in list_to_remove:
+        #     self.connections_list.pop(key, None)
+
+    def modal_name_device(self, event, labelDevice, device):
+        global pop
+        pop = Toplevel(root)
+        pop.title("Editar Nome")
+        pop.geometry("300x150")
+        pop.config(bg="#f0f0f0")
+        pop.resizable(False, False)
+        # Create a Label Text
+        # label = Label(pop, text="Nome",
+        # font=('Aerial', 12), bg="#f0f0f0")
+        #
+        # label.pack(pady=20)
+        entry= Entry(pop, width= 20)
+        entry.focus_set()
+        entry.pack(pady=20)
+        entry.delete(0,END)
+        entry.insert(0,labelDevice.cget("text"))
+        # Add a Frame
+        frame = Frame(pop)
+        frame.pack(pady=10)
+        # Add Button for making selection
+        def exit_btn():
+            pop.destroy()
+            pop.update()
+
+        def set_name_device():
+            labelDevice.config(text=entry.get())
+            device.name = entry.get()
+            exit_btn()
+
+        button1 = Button(frame, text="Salvar", command=lambda: set_name_device())
+        button2 = Button(frame, text="Fechar", command=lambda: exit_btn())
+        button2.grid(row=0, column=1)
+        button1.grid(row=0, column=3)
 
 
     def handle_keypress(event):
