@@ -1,73 +1,23 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from tkinter import *
+from tkinter import Tk, Button, Label, Frame, Canvas, PhotoImage, Menu, Toplevel, Entry, END
 from PIL import Image, ImageTk
 # import sys
 from tkinter import messagebox as tkMessageBox
-# import Tkinter as tk
-import tkinter as tk
 import json
 import os
+# import model.screenelement
+from model.screenelement import ScreenElement
+# import model.tooltip
+from model.tooltip import ToolTip
+from util.constants import *
 # import importlib
 # importlib.reload(sys)
 # sys.setdefaultencoding('utf-8')
 
-#Default Values
-APP_NAME = "NetLabX"
-CODE_VERSION = "v1.0.0"
-SCREEN_ICON_SIZE = 65
-
 #Load config json
 with open('devices.conf') as json_file:
     data = json.load(json_file)
-
-#Menu Button Object
-class ScreenElement:
-    def __init__(self, element, data):
-        self.element = element
-        self.id = data['id']
-        self.name = data['name']
-        self.photoImage = PhotoImage(file = data['logo'])
-        self.element["width"] = SCREEN_ICON_SIZE
-        self.element["height"] = SCREEN_ICON_SIZE
-        self.element["image"] = self.photoImage
-        self.element["text"] = data['name']
-        #self.element["command"] = lambda: self.test(data)
-        self.element.image = self.photoImage
-        self.element.pack()
-        ToolTip(self.element, x_pading=SCREEN_ICON_SIZE, y_pading=SCREEN_ICON_SIZE, text="Criar novo {}".format(self.element["text"]))
-
-    def __repr__(self):
-        return "ScreenElement id:% s elementText:% s" % (self.id, self.element["text"])
-
-#CreateToolTip
-class ToolTip(object):
-    def __init__(self, widget, x_pading=25, y_pading=25, text='dica de ferramenta'):
-        self.widget = widget
-        self.text = text
-        self.x_pading = x_pading
-        self.y_pading = y_pading
-        self.widget.bind("<Enter>", self.enter)
-        self.widget.bind("<Leave>", self.close)
-
-    def enter(self, event=None):
-        x = y = 0
-        x, y, cx, cy = self.widget.bbox("insert")
-        x += self.widget.winfo_rootx() + self.x_pading
-        y += self.widget.winfo_rooty() + self.y_pading
-        # creates a toplevel window
-        self.tw = tk.Toplevel(self.widget)
-        # Leaves only the label and removes the app window
-        self.tw.wm_overrideredirect(True)
-        self.tw.wm_geometry("+%d+%d" % (x, y))
-        label = tk.Label(self.tw, text=self.text, justify='left',
-                       background='#3498db', relief='solid', borderwidth=1,
-                       font=("times", "9", "normal"))
-        label.pack(ipadx=1)
-
-    def close(self, event=None):
-        if self.tw:
-            self.tw.destroy()
 
 class Application:
     def __init__(self, master):
@@ -225,9 +175,12 @@ class Application:
         buttonClose = Button(width=20, height=20, command= lambda arg=tagGenerated : self.buttonClose(arg), image=self.ptImgClose)
         ToolTip(buttonClose, text = 'Fechar')
 
+        buttonCloseTESTE = Button(width=20, height=20, command= lambda arg=tagGenerated : self.buttonClose(arg), image=self.ptImgClose)
+        ToolTip(buttonClose, text = 'Fechar')
+
         labelEquip = Label(self.dragarea, text=element.name + " " + id, fg='black', bg='white')
         ToolTip(labelEquip, text = 'Editar Nome')
-        labelEquip.bind("<Button-1>", lambda event, labelEquip=labelEquip, element=element: self.modal_name_device(event, labelEquip, element))
+        labelEquip.bind("<Button-1>", lambda event, labelEquip=labelEquip, element=element: self.modal_name_device(event, labelEquip))
         # buttonClose.bind("<B1-Motion>", lambda event, arg=tagGenerated : self.dragDevice(event, arg))
         # Create Line Test
         # self.generateConection()
@@ -242,14 +195,17 @@ class Application:
         self.dragarea.tag_bind(imageBindId, "<B1-Motion>", lambda event, arg=tagGenerated : self.dragDevice(event, arg))
         self.dragarea.tag_bind(imageBindId, '<Button-1>', lambda event, arg=tagGenerated : self.draw_line(event, arg))
         # self.dragarea.create_window(position_x + 35, position_y + 35, window=label1, tag=tagGenerated)
-        self.dragarea.create_window(position_x - 10, position_y + 10, window=button1, tag=tagGenerated)
+        self.dragarea.create_window(position_x - 15, position_y + 10, window=button1, tag=tagGenerated)
         # self.dragarea.tag_bind(imageDevice, "<B1-Motion>", lambda event, arg=tagGenerated : self.dragDevice(event, arg))
         # self.dragarea.create_window(position_x + 85, position_y + 10, window=button2, tag=tagGenerated)
-        self.dragarea.create_window(position_x - 10, position_y + 40, window=button2, tag=tagGenerated)
+        self.dragarea.create_window(position_x - 15, position_y + 40, window=button2, tag=tagGenerated)
         self.dragarea.create_window(position_x + 85, position_y + 40, window=button3, tag=tagGenerated)
         self.dragarea.create_window(position_x + 85, position_y + 70, window=button4, tag=tagGenerated)
         # self.dragarea.create_window(position_x - 10, position_y + 40, window=buttonClose, tag=tagGenerated)
         self.dragarea.create_window(position_x + 85, position_y + 10, window=buttonClose, tag=tagGenerated)
+
+        self.dragarea.create_window(position_x - 15, position_y + 70, window=buttonCloseTESTE, tag=tagGenerated)
+
         self.dragarea.create_window(position_x + 35, position_y + 95, window=labelEquip, tag=tagGenerated)
 
         # self.dragarea.create_image(position_x + 70, position_y, image=self.newTesteImg, anchor='nw')
@@ -357,44 +313,39 @@ class Application:
         # for key in list_to_remove:
         #     self.connections_list.pop(key, None)
 
-    def modal_name_device(self, event, labelDevice, device):
+    def modal_name_device(self, event, labelDevice):
         global pop
         pop = Toplevel(root)
         pop.title("Editar Nome")
         pop.geometry("300x150")
         pop.config(bg="#f0f0f0")
         pop.resizable(False, False)
-        # Create a Label Text
-        # label = Label(pop, text="Nome",
-        # font=('Aerial', 12), bg="#f0f0f0")
-        #
-        # label.pack(pady=20)
+
         entry= Entry(pop, width= 20)
         entry.focus_set()
         entry.pack(pady=20)
         entry.delete(0,END)
         entry.insert(0,labelDevice.cget("text"))
-        # Add a Frame
+
         frame = Frame(pop)
         frame.pack(pady=10)
-        # Add Button for making selection
-        def exit_btn():
+
+        def close():
             pop.destroy()
             pop.update()
 
         def set_name_device():
             labelDevice.config(text=entry.get())
-            device.name = entry.get()
-            exit_btn()
+            close()
 
         button1 = Button(frame, text="Salvar", command=lambda: set_name_device())
-        button2 = Button(frame, text="Fechar", command=lambda: exit_btn())
+        button2 = Button(frame, text="Fechar", command=lambda: close())
         button2.grid(row=0, column=1)
         button1.grid(row=0, column=3)
 
 
     def handle_keypress(event):
-        input1.delete(0, tk.DEL)
+        input1.delete(0, DEL)
 
     def getRandomId(self):
         id = self.counter
