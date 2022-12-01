@@ -54,7 +54,7 @@ class ScreenDevice:
         self.btn_off = Button(width=20, height=20, command= lambda arg=self.device_menu.id : self.run_script(self.script_off), image=self.tk_inter_base.icons['PT_IMG_OFF'])
         toolTip_btn_off = ToolTip(self.btn_off, text = 'Desligar')
 
-        self.btn_close = Button(width=20, height=20, command= lambda arg=self.tagGenerated : self.btn_close(arg), image=self.tk_inter_base.icons['PT_IMG_CLOSE'])
+        self.btn_close = Button(width=20, height=20, command= lambda arg=self.tagGenerated : self.btn_close_command(arg), image=self.tk_inter_base.icons['PT_IMG_CLOSE'])
         ToolTip(self.btn_close, text = 'Fechar')
 
         self.btn_extra = Button(width=20, height=20, command= lambda arg=self.tagGenerated : self.run_script(self.script_extra), image=self.tk_inter_base.icons['PT_IMG_PYTHON'])
@@ -69,7 +69,7 @@ class ScreenDevice:
     def __repr__(self):
         return "ScreenDevice id:% s Name:% s" % (self.id, self.name)
 
-    def btn_close(self, tag):
+    def btn_close_command(self, tag):
         self.tk_inter_base.drag_area.delete(tag)
         self.tk_inter_base.drag_area.delete(tag + "btn_close")
         self.tk_inter_base.remove_line_by_tag(tag)
@@ -100,7 +100,7 @@ class ScreenDevice:
             tag_line = "{}/{}/{}".format(self.tk_inter_base.connection_1, self.tk_inter_base.connection_2, uuid.uuid4())
             self.tk_inter_base.connections_list[tag_line] = self.tk_inter_base.drag_area.create_line(self.tk_inter_base.line_x1 - 15, self.tk_inter_base.line_y1, x2 - 15, y2, fill='black', width=5, tag=tag_line)
 
-            btn_close = Button(width=20, height=20, command= lambda arg=tag_line : self.btn_close(arg), image=self.tk_inter_base.icons['PT_IMG_CLOSE'])
+            btn_close = Button(width=20, height=20, command= lambda arg=tag_line : self.btn_close_command(arg), image=self.tk_inter_base.icons['PT_IMG_CLOSE'])
             ToolTip(btn_close, text = 'Fechar')
             self.tk_inter_base.drag_area.create_window((self.tk_inter_base.line_x1 + x2)/2, (self.tk_inter_base.line_y1 + y2)/2, window=btn_close, tag=tag_line + "btn_close")
 
