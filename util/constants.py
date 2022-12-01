@@ -1,0 +1,4 @@
+#Default Values
+APP_NAME = "NetLabX"
+CODE_VERSION = "v1.0.0"
+SCREEN_ICON_SIZE = 65

@@ -8,7 +8,7 @@
 **Article Project Link**
 [article.pdf](https://tcc.tsi.gp.utfpr.edu.br/attachments/approvals/157/GP_COINT_2019_1_PROPOSTA_PATRICK_FERRO_RIBEIRO.pdf?1559303561)
     
-**Python 2.7**:
+**Python 3**:
 - Desktop application using TkInter.
 
 **Run**  
@@ -16,3 +16,20 @@
   To run the project on your equipment, type this in the netlabx folder.  
 
     python netlabx.py
+
+**Virtualenv save requirements**  
+
+    pip freeze > requirements.txt  
+
+**Virtualenv load requirements**  
+Required virtualenv and run:  
+
+    $ virtualenv <env_name>  
+    $ source <env_name>/bin/activate  
+    (<env_name>)$ pip install -r requirements.txt  
+
+**Compile Project**  
+    pyinstaller netlabx.py --hidden-import='PIL._tkinter_finder' --onefile  
+
+
+
