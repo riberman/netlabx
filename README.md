@@ -29,6 +29,7 @@ Required virtualenv and run:
     (<env_name>)$ pip install -r requirements.txt  
 
 **Compile Project**  
+
     pyinstaller netlabx.py --hidden-import='PIL._tkinter_finder' --onefile  
 
 
