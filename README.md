@@ -16,3 +16,16 @@
   To run the project on your equipment, type this in the netlabx folder.  
 
     python netlabx.py
+
+**Virtualenv save requirements**  
+pip freeze > requirements.txt  
+
+**Virtualenv load requirements**  
+Required virtualenv and run:  
+$ virtualenv <env_name>  
+$ source <env_name>/bin/activate  
+(<env_name>)$ pip install -r path/to/requirements.txt  
+
+
+**Compile Project**  
+    pyinstaller netlabxnew.py --hidden-import='PIL._tkinter_finder' --onefile  
